@@ -15,14 +15,10 @@
       <PrivateAssets>All</PrivateAssets>
     </PackageReference> -->
 
-    <PropertyGroup>
-      <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    </PropertyGroup>
-
-    <ProjectReference Include="..\MonoGame\MonoGame.Framework\MonoGame.Framework.WindowsDX.csproj">
+    <ProjectReference Include="..\..\MonoGame\MonoGame.Framework\MonoGame.Framework.WindowsDX.csproj">
       <PrivateAssets>All</PrivateAssets>
     </ProjectReference>
-    <ProjectReference Include="..\MonoGame\MonoGame.Framework.Content.Pipeline\MonoGame.Framework.Content.Pipeline.csproj">
+    <ProjectReference Include="..\..\MonoGame\MonoGame.Framework.Content.Pipeline\MonoGame.Framework.Content.Pipeline.csproj">
       <PrivateAssets>All</PrivateAssets>
     </ProjectReference>
   </ItemGroup>
