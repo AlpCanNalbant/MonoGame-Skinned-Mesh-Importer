@@ -9,7 +9,7 @@ namespace Liru3D.Models
     {
         #region Backing Fields
         /// <summary> The declaration of a single vertex used when uploading vertex data to the GPU. </summary>
-        public static readonly VertexDeclaration VertexDeclaration = new VertexDeclaration(
+        public static readonly VertexDeclaration VertexDeclaration = new(
             new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
             new VertexElement(12, VertexElementFormat.Byte4, VertexElementUsage.BlendIndices, 0),
             new VertexElement(16, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 0),
@@ -20,35 +20,35 @@ namespace Liru3D.Models
 
         #region Properties
         /// <summary> The layout of this vertex data, compatible with the default MonoGame SkinnedEffect. </summary>
-        VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
+        readonly VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
 
         /// <summary> The position of the vertex itself. </summary>
-        public Vector3 Position { get; set; }
+        public Vector3 Position;
 
         /// <summary> The packed bone indices that affect this vertex's position. </summary>
-        public Byte4 BlendIndices { get; set; }
+        public Byte4 BlendIndices;
 
         /// <summary> The amount that each bone affects the final position of this vertex. </summary>
-        public Vector4 BlendWeights { get; set; }
+        public Vector4 BlendWeights;
 
         /// <summary> The normal direction of this vertex. </summary>
-        public Vector3 Normal { get; set; }
+        public Vector3 Normal;
 
         /// <summary> The Texture co-ordinate. </summary>
-        public Vector2 UV { get; set; }
+        public Vector2 UV;
         #endregion
 
         #region Weight Functions
         /// <summary> Calculates the total number of non-zero weights of the <see cref="BlendWeights"/>, which is the total number of bones influencing this vertex. </summary>
         /// <returns> The calculated number of bones which influence this vertex. </returns>
-        public int CalculateBoneCount()
+        public readonly int CalculateBoneCount()
         {
             // Count the number of non-zero weights and return the result.
             int boneCount = 0;
-            if (BlendWeights.X != 0) boneCount++;
-            if (BlendWeights.Y != 0) boneCount++;
-            if (BlendWeights.Z != 0) boneCount++;
-            if (BlendWeights.W != 0) boneCount++;
+            if (BlendWeights.X != 0) ++boneCount;
+            if (BlendWeights.Y != 0) ++boneCount;
+            if (BlendWeights.Z != 0) ++boneCount;
+            if (BlendWeights.W != 0) ++boneCount;
             return boneCount;
         }
 

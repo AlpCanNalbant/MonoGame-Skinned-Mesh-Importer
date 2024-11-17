@@ -1,28 +1,34 @@
 ﻿using Liru3D.Models.Data;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using EndGame.Utility;
 
 namespace Liru3D.Models
 {
     /// <summary> A single mesh of a <see cref="SkinnedModel"/>. </summary>
-    public class SkinnedMesh
+    public sealed class SkinnedMesh
     {
+        #region Backing Fields
+        private string name;
+        private BoundingSphere boundingSphere;
+        #endregion
+
         #region Dependencies
         private readonly GraphicsDevice graphicsDevice;
         #endregion
 
         #region Properties
         /// <summary> The name of the mesh. </summary>
-        public string Name { get; private set; }
+        public string Name => name;
 
         /// <summary> The vertex buffer object that contains the vertex data of this mesh. </summary>
-        public VertexBuffer VertexBuffer { get; }
+        public readonly VertexBuffer VertexBuffer;
 
         /// <summary> The index buffer object that contains the index data of this mesh. </summary>
-        public IndexBuffer IndexBuffer { get; }
+        public readonly IndexBuffer IndexBuffer;
 
         /// <summary> The bounding sphere of the mesh without any animations applied. </summary>
-        public BoundingSphere BoundingSphere { get; private set; }
+        public ref readonly BoundingSphere BoundingSphere => ref boundingSphere;
         #endregion
 
         #region Constructors
@@ -31,8 +37,8 @@ namespace Liru3D.Models
             this.graphicsDevice = graphicsDevice ?? throw new System.ArgumentNullException(nameof(graphicsDevice));
             VertexBuffer = vertexBuffer ?? throw new System.ArgumentNullException(nameof(vertexBuffer));
             IndexBuffer = indexBuffer ?? throw new System.ArgumentNullException(nameof(indexBuffer));
-            BoundingSphere = boundingSphere;
-            Name = name;
+            this.boundingSphere = boundingSphere;
+            this.name = name;
         }
         #endregion
 
@@ -44,11 +50,11 @@ namespace Liru3D.Models
         public void UpdateDataFrom(SkinnedMeshData data)
         {
             // Set the data from the given data object.
-            Name = data.Name ?? Name;
+            name = data.Name ?? name;
             if (data.VertexCount > 0)
             {
                 VertexBuffer.SetData(data.Vertices);
-                BoundingSphere = data.CalculateBoundingSphere();
+                boundingSphere = data.CalculateBoundingSphere();
             }
             if (data.IndexCount > 0) IndexBuffer.SetData(data.Indices);
         }
@@ -62,15 +68,15 @@ namespace Liru3D.Models
         public static SkinnedMesh CreateFrom(GraphicsDevice graphicsDevice, SkinnedMeshData data)
         {
             // Create a vertex buffer.
-            VertexBuffer vertexBuffer = new VertexBuffer(graphicsDevice, SkinnedVertex.VertexDeclaration, data.Vertices.Length * SkinnedVertex.VertexDeclaration.VertexStride, BufferUsage.None);
+            var vertexBuffer = new VertexBuffer(graphicsDevice, SkinnedVertex.VertexDeclaration, data.Vertices.Length * SkinnedVertex.VertexDeclaration.VertexStride, BufferUsage.None);
             vertexBuffer.SetData(0, data.Vertices, 0, data.Vertices.Length, SkinnedVertex.VertexDeclaration.VertexStride);
 
             // Create an index buffer.
-            IndexBuffer indexBuffer = new IndexBuffer(graphicsDevice, IndexElementSize.ThirtyTwoBits, data.Indices.Length, BufferUsage.None);
+            var indexBuffer = new IndexBuffer(graphicsDevice, IndexElementSize.ThirtyTwoBits, data.Indices.Length, BufferUsage.None);
             indexBuffer.SetData(data.Indices);
 
             // Create the skinned mesh using the created data.
-            SkinnedMesh skinnedMesh = new SkinnedMesh(graphicsDevice, vertexBuffer, indexBuffer, data.CalculateBoundingSphere(), data.Name);
+            var skinnedMesh = new SkinnedMesh(graphicsDevice, vertexBuffer, indexBuffer, data.CalculateBoundingSphere(), data.Name);
 
             // Return the created mesh.
             return skinnedMesh;
@@ -83,7 +89,7 @@ namespace Liru3D.Models
         {
             graphicsDevice.SetVertexBuffer(VertexBuffer);
             graphicsDevice.Indices = IndexBuffer;
-            graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, VertexBuffer.VertexCount);
+            graphicsDevice.DrawIndexedTriangle(0, 0, VertexBuffer.VertexCount);
         }
         #endregion
     }

@@ -1,12 +1,14 @@
 ﻿using Liru3D.Animations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Graphics.PackedVector;
+using System;
 using System.Collections.Generic;
 
 namespace Liru3D.Models.Data
 {
-    public class SkinnedMeshReader : ContentTypeReader<SkinnedModel>
+    public sealed class SkinnedMeshReader : ContentTypeReader<SkinnedModel>
     {
         protected override SkinnedModel Read(ContentReader input, SkinnedModel existingInstance)
         {
@@ -26,7 +28,7 @@ namespace Liru3D.Models.Data
                 for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++)
                 {
                     // Read each piece of data for the vertex.
-                    SkinnedVertex vertex = new SkinnedVertex
+                    SkinnedVertex vertex = new()
                     {
                         Position = input.ReadVector3(),
                         Normal = input.ReadVector3(),
@@ -51,7 +53,7 @@ namespace Liru3D.Models.Data
 
             // Read the number of animations and create an array to hold them all.
             int animationCount = input.ReadInt32();
-            List<Animation> animations = new List<Animation>(animationCount);
+            var animations = new List<Animation>(animationCount);
 
             // Load each animation.
             for (int animationIndex = 0; animationIndex < animationCount; animationIndex++)
@@ -65,7 +67,7 @@ namespace Liru3D.Models.Data
 
                 // Read the number of channels and create a collection to hold them all.
                 int channelCount = input.ReadInt32();
-                Dictionary<string, BoneChannel> channels = new Dictionary<string, BoneChannel>(channelCount);
+                var channels = new Dictionary<string, BoneChannel>(channelCount);
 
                 // Load each channel.
                 for (int channelIndex = 0; channelIndex < channelCount; channelIndex++)
@@ -75,17 +77,17 @@ namespace Liru3D.Models.Data
 
                     // Read each component of the channel.
                     int scalesCount = input.ReadInt32();
-                    List<Keyframe<Vector3>> scaleFrames = new List<Keyframe<Vector3>>(scalesCount);
+                    var scaleFrames = new List<Keyframe<Vector3>>(scalesCount);
                     for (int scalesIndex = 0; scalesIndex < scalesCount; scalesIndex++)
                         scaleFrames.Add(new Keyframe<Vector3>(input.ReadInt32(), input.ReadInt32(), input.ReadVector3()));
 
                     int rotationsCount = input.ReadInt32();
-                    List<Keyframe<Quaternion>> rotationFrames = new List<Keyframe<Quaternion>>(rotationsCount);
+                    var rotationFrames = new List<Keyframe<Quaternion>>(rotationsCount);
                     for (int rotationsIndex = 0; rotationsIndex < rotationsCount; rotationsIndex++)
                         rotationFrames.Add(new Keyframe<Quaternion>(input.ReadInt32(), input.ReadInt32(), input.ReadQuaternion()));
 
                     int positionsCount = input.ReadInt32();
-                    List<Keyframe<Vector3>> positionFrames = new List<Keyframe<Vector3>>(positionsCount);
+                    var positionFrames = new List<Keyframe<Vector3>>(positionsCount);
                     for (int positionsIndex = 0; positionsIndex < positionsCount; positionsIndex++)
                         positionFrames.Add(new Keyframe<Vector3>(input.ReadInt32(), input.ReadInt32(), input.ReadVector3()));
 
@@ -103,7 +105,7 @@ namespace Liru3D.Models.Data
             for (int boneIndex = 0; boneIndex < boneCount; boneIndex++)
             {
                 // Read each piece of data for the bone.
-                BoneData boneData = new BoneData()
+                var boneData = new BoneData()
                 {
                     Name = input.ReadString(),
                     Index = input.ReadInt32(),
@@ -117,7 +119,28 @@ namespace Liru3D.Models.Data
             }
 
             // Create and return the model data with the loaded meshes, animations, and bones.
-            return SkinnedModel.CreateFrom(input.GetGraphicsDevice(), new SkinnedModelData(meshes, animations, bones));
+            return SkinnedModel.CreateFrom(ContentReaderHelper.GetGraphicsDevice(input), new SkinnedModelData(meshes, animations, bones));
+        }
+    }
+
+    public static class ContentReaderHelper
+    {
+        /// <summary>
+        /// Returns the <see cref="GraphicsDevice"/> instance from the service provider of the
+        /// <see cref="ContentManager"/> associated with this content reader.
+        /// </summary>
+        /// <returns>The <see cref="GraphicsDevice"/>.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// The <see cref="ContentManager.ServiceProvider">ContentManager.ServiceProvider</see> does not contain a
+        /// <see cref="GraphicsDevice"/> instance.
+        /// </exception>
+        public static GraphicsDevice GetGraphicsDevice(this ContentReader contentReader)
+        {
+            var serviceProvider = contentReader.ContentManager.ServiceProvider;
+            if (serviceProvider.GetService(typeof(IGraphicsDeviceService)) is not IGraphicsDeviceService graphicsDeviceService)
+                throw new InvalidOperationException("No Graphics Device Service");
+
+            return graphicsDeviceService.GraphicsDevice;
         }
     }
 }

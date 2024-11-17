@@ -7,36 +7,30 @@ namespace Liru3D.Models
 {
     /// <summary> Contains a collection of meshes and animations. </summary>
     /// <remarks> Note that no changes can be made to a model, mesh, or bone at runtime. </remarks>
-    public class SkinnedModel
+    /// <remarks> Creates a skinned model from the given data. </remarks>
+    /// <param name="meshes"> The meshes. This cannot be null. </param>
+    /// <param name="animations"> The animations, this may be null. </param>
+    /// <param name="bones"> The bones. This cannot be null. </param>
+    public sealed class SkinnedModel(List<SkinnedMesh> meshes, List<Animation> animations, IReadOnlyList<Bone> bones)
     {
         #region Properties
         /// <summary> The collection of meshes. </summary>
-        public List<SkinnedMesh> Meshes { get; }
+        public readonly List<SkinnedMesh> Meshes = meshes ?? throw new System.ArgumentNullException(nameof(meshes));
 
         /// <summary> The collection of animations loaded from this model. </summary>
-        public List<Animation> Animations { get; }
+        public readonly List<Animation> Animations = animations;
 
         /// <summary> Gets the number of animations that exist in this model. </summary>
         public int AnimationCount => Animations != null ? Animations.Count : 0;
 
         /// <summary> Gets this model's <see cref="Bone"/>s. </summary>
-        public IReadOnlyList<Bone> Bones { get; }
+        public readonly IReadOnlyList<Bone> Bones = bones ?? throw new System.ArgumentNullException(nameof(bones));
 
         /// <summary> Gets the number of bones that this model has. </summary>
         public int BoneCount => Bones.Count;
-        #endregion
 
+        #endregion
         #region Constructors
-        /// <summary> Creates a skinned model from the given data. </summary>
-        /// <param name="meshes"> The meshes. This cannot be null. </param>
-        /// <param name="animations"> The animations, this may be null. </param>
-        /// <param name="bones"> The bones. This cannot be null. </param>
-        public SkinnedModel(List<SkinnedMesh> meshes, List<Animation> animations, IReadOnlyList<Bone> bones)
-        {
-            Meshes = meshes ?? throw new System.ArgumentNullException(nameof(meshes));
-            Animations = animations;
-            Bones = bones ?? throw new System.ArgumentNullException(nameof(bones));
-        }
         #endregion
 
         #region Creation Functions
@@ -47,12 +41,12 @@ namespace Liru3D.Models
         public static SkinnedModel CreateFrom(GraphicsDevice graphicsDevice, SkinnedModelData data)
         {
             // Create the mesh and bone collections.
-            List<SkinnedMesh> meshes = new List<SkinnedMesh>(data.MeshCount);
+            var meshes = new List<SkinnedMesh>(data.MeshCount);
             Bone[] bones = new Bone[data.BoneCount];
 
             // Create the model with references to the collections.
-            SkinnedModel model = new SkinnedModel(meshes, data.Animations, bones);
-            
+            var model = new SkinnedModel(meshes, data.Animations, bones);
+
             // Populate the collections.
             for (int meshIndex = 0; meshIndex < data.Meshes.Count; meshIndex++)
                 meshes.Add(SkinnedMesh.CreateFrom(graphicsDevice, data.Meshes[meshIndex]));

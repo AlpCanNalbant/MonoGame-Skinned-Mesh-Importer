@@ -5,17 +5,17 @@ namespace Liru3D.Animations
 {
     /// <summary> Holds a time and a <typeparamref name="T"/> value. </summary>
     [DebuggerDisplay("Index: {Index} Tick: {TickTime} Value: {Value}")]
-    public struct Keyframe<T> : IComparable<Keyframe<T>> where T : struct
+    public readonly struct Keyframe<T> : IComparable<Keyframe<T>> where T : struct
     {
         #region Properties
         /// <summary> The index of this frame. </summary>
-        public int Index { get; }
+        public readonly int Index;
 
         /// <summary> The time of this frame in ticks. </summary>
-        public int TickTime { get; }
+        public readonly int TickTime;
 
         /// <summary> The value (rotation, scale, or position) of this frame. </summary>
-        public T Value { get; }
+        public readonly T Value;
         #endregion
 
         #region Constructors

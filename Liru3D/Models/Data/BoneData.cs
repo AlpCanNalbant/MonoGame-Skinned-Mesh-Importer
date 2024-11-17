@@ -9,19 +9,19 @@ namespace Liru3D.Models.Data
     {
         #region Properties
         /// <summary> The name of the bone. </summary>
-        public string Name { get; set; }
+        public string Name;
 
         /// <summary> the index of this bone within the model. </summary>
-        public int Index { get; set; }
+        public int Index;
 
         /// <summary> The index of this bone's parent bone within the model. </summary>
-        public int ParentIndex { get; set; }
+        public int ParentIndex;
 
         /// <summary> The offset of the bone, used when rendering. </summary>
-        public Matrix Offset { get; set; }
+        public Matrix Offset;
 
         /// <summary> The transform of the bone relative to its parent. If this bone has no parent, then it is relative to the model. </summary>
-        public Matrix LocalTransform { get; set; }
+        public Matrix LocalTransform;
         #endregion
     }
 }

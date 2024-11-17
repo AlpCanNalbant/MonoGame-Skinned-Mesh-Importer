@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <!-- FNA SECTION BEGIN -->
+
+  <!-- <ItemGroup>
+    <ProjectReference Include="..\FNA\FNA.Core.csproj">
+      <PrivateAssets>All</PrivateAssets>
+    </ProjectReference>
+  </ItemGroup> -->
+
+  <!-- FNA SECTION END -->
+
+  <ItemGroup>
+    <ProjectReference Include="..\MonoGame\MonoGame.Framework\MonoGame.Framework.WindowsDX.csproj">
+      <PrivateAssets>All</PrivateAssets>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.2.1105">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference> -->
+    <ProjectReference Include="..\EndGame.Utility\EndGame.Utility.csproj">
+      <PrivateAssets>All</PrivateAssets>
+    </ProjectReference>
+  </ItemGroup>
+
+</Project>
